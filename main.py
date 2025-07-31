@@ -1,5 +1,9 @@
+from test_safety import text_classifier
 import streamlit as st
 
-txt = "Hello World"
+prompt = st.chat_input("Test for offensive material")
 
-st.write(txt)
+if prompt:
+    st.write(f"Result: {text_classifier(prompt)}")
+
+
