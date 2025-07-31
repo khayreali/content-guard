@@ -1,4 +1,4 @@
-from test_safety import text_classifier
+from safety_models import text_classifier
 import streamlit as st
 
 prompt = st.chat_input("Test for offensive material")
