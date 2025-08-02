@@ -24,6 +24,7 @@ def text_classifier(txt):
 def nsfw_classifier(img):
     img = Image.open(img)
     classifier = pipeline("image-classification", model="Falconsai/nsfw_image_detection")
+
     result = classifier(img)[0]['label']
 
     if result == 'normal':
@@ -32,3 +33,11 @@ def nsfw_classifier(img):
         output = 'Image contains NSFW material.'
 
     return output
+
+def nsfw_score(img):
+    img = Image.open(img)
+    classifier = pipeline("image-classification", model="Falconsai/nsfw_image_detection")
+
+    result = classifier(img)[0]['score']
+
+    return result
