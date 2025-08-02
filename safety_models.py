@@ -1,7 +1,7 @@
 import torch
 import warnings
 from PIL import Image
-from transformers import logging, pipeline, AutoProcessor, ShieldGemma2ForImageClassification
+from transformers import logging, pipeline
 
 logging.set_verbosity_error()
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -27,10 +27,8 @@ def nsfw_classifier(img):
     result = classifier(img)[0]['label']
 
     if result == 'normal':
-        output = "Text does no contain NSFW material."
+        output = "Image does no contain NSFW material."
     elif result == 'nsfw':
-        output = 'Text contains NSFW material.'
+        output = 'Image contains NSFW material.'
 
     return output
-
-print(nsfw_classifier('flowers.jpg'))
