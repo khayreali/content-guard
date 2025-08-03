@@ -74,7 +74,17 @@ def chain_of_thought_img(img, results):
             "content": [
                 {"type": "image", "image": img},
                 {"type": "text", 
-                 "text": f"You're an Trust and Safety associate at a social media company, explain why this photo aligns with your T&S software {results}"},
+                 "text": f"""
+                Analyze the text content step-by-step:
+
+                 Step 1: State what the image classifier results are... {results}
+                 Step 2: Considering content safety policies, I need to evaluate...
+                 Step 3: The key concerns I identify are...
+                 Step 4: My final review on whether the results from the image classifier are correct are...
+
+                 Provide reasoning for every step. Please be succint and professional. 
+                 You work in the domain of Trust and Safety, so please don't be verbose. Just get straight to the point.
+                 """},
             ],
         },
     ]
@@ -102,7 +112,17 @@ def chain_of_thought_txt(txt, results):
             "content": [
                 {"type": "text", "text": txt},
                 {"type": "text", 
-                 "text": f"You're an Trust and Safety associate at a social media company, explain why the results of the safety software aligns the actual text {results}"},
+                 "text": f"""
+                 Analyze the text content step-by-step:
+
+                 Step 1: State what the text classifier results are. {results}
+                 Step 2: Considering content safety policies, I need to evaluate...
+                 Step 3: The key concerns I identify are...
+                 Step 4: My final review on whether the results from the text classifier are correct are...
+
+                 Provide reasoning for every step. Please be succint and professional. 
+                 You work in the domain of Trust and Safety, so please don't be verbose. Just get straight to the point.
+                 """},
             ],
         },
     ]
@@ -115,6 +135,11 @@ def chain_of_thought_txt(txt, results):
         return_tensors="pt"
     ).to(device)
 
-    # Generate
-    generate_ids = model.generate(**inputs, max_new_tokens=200)
-    return processor.batch_decode(generate_ids, skip_special_tokens=True)
+    generate_ids = model.generate(**inputs, max_new_tokens=400)
+    lst_result = processor.batch_decode(generate_ids, skip_special_tokens=True)
+    response_txt = lst_result[0]
+    response_txt = response_txt.split('ASSISTANT: ')
+    response_txt = response_txt[1]
+    parts = response_txt.split("Step ")
+    response_txt = "Steps " + "\nStep ".join(parts[1:])
+    return response_txt
