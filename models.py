@@ -99,7 +99,13 @@ def chain_of_thought_img(img, results):
 
     # Generate
     generate_ids = model.generate(**inputs, max_new_tokens=200)
-    return processor.batch_decode(generate_ids, skip_special_tokens=True)
+    lst_result = processor.batch_decode(generate_ids, skip_special_tokens=True)
+    response_txt = lst_result[0]
+    response_txt = response_txt.split('ASSISTANT: ')
+    response_txt = response_txt[1]
+    parts = response_txt.split("Step ")
+    response_txt = "Steps " + "\nStep ".join(parts[1:])
+    return response_txt
 
 def chain_of_thought_txt(txt, results):
     device = 'mps' if torch.backends.mps.is_available() else 'cpu'
