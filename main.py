@@ -57,8 +57,8 @@ if prompt and prompt['files']:
                                        'content': response})
 
     else:
-        img_response = f"Image resuts: {image_result}"
-        txt_response = f"Text resuts: {text_result}"
+        img_response = f"Results: {image_result}"
+        txt_response = f"Results: {text_result}"
         with assistant:
             st.markdown(img_response)
             st.markdown(txt_response)
