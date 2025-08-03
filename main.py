@@ -1,4 +1,4 @@
-from models import text_classifier, nsfw_classifier, optical_character_recognition
+from models import text_classifier, nsfw_classifier, optical_character_recognition, chain_of_thought_txt, chain_of_thought_img
 import streamlit as st
 
 st.title('Multi-Modal Content Safety Classifier')
@@ -23,13 +23,19 @@ if prompt and prompt.text and not prompt['files']:
     user.markdown(prompt.text)
     st.session_state.messages.append({'role': 'user', 
                                       'content': prompt.text})
-    response = f"Result: {text_classifier(prompt.text)}"
+    
+    classifier_result = f"Result: {text_classifier(prompt.text)}"
+
+    response = chain_of_thought_txt(prompt.text, classifier_result)
 
     with assistant:
-        st.markdown(response)
+        st.markdown(f'###### {classifier_result}.')
+        with st.expander('*See reasoning*'):
+            st.markdown(response)
     
     st.session_state.messages.append({'role': 'assistant',
-                                       'content': response})
+                                       'content': classifier_result})
+    
 
 if prompt and prompt['files']:
     user = st.chat_message('user')
