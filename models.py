@@ -1,7 +1,7 @@
 from functools import lru_cache
 import warnings
 from PIL import Image
-from transformers import logging, pipeline, AutoProcessor, LlavaForConditionalGeneration
+from transformers import logging, pipeline, AutoProcessor, LlavaForConditionalGeneration, ViTForImageClassification, ViTFeatureExtractor
 import easyocr
 import torch
 
@@ -13,6 +13,7 @@ def load_model_classification(model_type, model_name):
     model = pipeline(model_type, model = model_name)
     return model
 
+@lru_cache(maxsize=1)
 def load_model(model_type, model_name):
     model = model_type.from_pretrained(model_name, torch_dtype=torch.float16)
     return model
@@ -41,9 +42,9 @@ def nsfw_classifier(img):
     result = classifier(img)[0]['label']
 
     if result == 'normal':
-        output = "Image does not contain NSFW material."
+        output = "Image does not contain NSFW material"
     elif result == 'nsfw':
-        output = 'Image contains NSFW material.'
+        output = 'Image contains NSFW material'
 
     return output
 
@@ -149,3 +150,22 @@ def chain_of_thought_txt(txt, results):
     parts = response_txt.split("Step ")
     response_txt = "Steps " + "\nStep ".join(parts[1:])
     return response_txt
+
+def violence_classifier(img):
+    device = 'mps' if torch.backends.mps.is_available() else 'cpu'
+    model = ViTForImageClassification.from_pretrained('jaranohaal/vit-base-violence-detection').to(device)
+    feature_extractor = ViTFeatureExtractor.from_pretrained('jaranohaal/vit-base-violence-detection')
+
+    
+    image = Image.open(img)
+
+    
+    inputs = feature_extractor(images=image, return_tensors="pt").to(device)
+
+    
+    with torch.no_grad():
+        outputs = model(**inputs)
+        logits = outputs.logits
+        predicted_class_idx = logits.argmax(-1).item()
+
+    return ("Predicted class:", model.config.id2label[predicted_class_idx])
