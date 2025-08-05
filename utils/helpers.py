@@ -2,9 +2,6 @@ from functools import lru_cache
 from transformers import pipeline
 import torch
 
-import sys
-sys.path.append('../')
-
 @lru_cache(maxsize=4)
 def load_pipeline(task, model_name):
     device = 'mps' if torch.backends.mps.is_available() else 'cpu'

@@ -1,7 +1,11 @@
-from models import text_classifier, nsfw_classifier, optical_character_recognition, chain_of_thought_txt, chain_of_thought_img
+from models import ChainOfThought, ImageClassifier, OpticalCharacterRecognition, SafetyCategorizer, TextClassifier 
 import streamlit as st
+from transformers import logging, warnings
 
-st.title('Multi-Modal Content Safety Classifier')
+logging.set_verbosity_error()
+warnings.filterwarnings("ignore", category=FutureWarning)
+
+st.title('SafeGuard: Multi-Modal Content Safety Classifier', width = 'content')
 
 prompt = st.chat_input(accept_file=True,
                        file_type=['jpg', 'jpeg', 'png'])
@@ -11,7 +15,7 @@ prompt = st.chat_input(accept_file=True,
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
-# Dsiplay chat messages
+# Display chat messages
 
 for message in st.session_state.messages:
     with st.chat_message(message['role']):

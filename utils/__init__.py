@@ -1,1 +1,1 @@
-from .model_utils import load_pipeline, load_pretrained
+from .helpers import load_pipeline, load_pretrained
