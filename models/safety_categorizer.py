@@ -13,7 +13,7 @@ import torch
 
 '''
 
-class NSFWCategorizer:
+class SafetyCategorizer:
     def __init__(self, categories):
         self.nsfw_categories = categories
         self.device = 'mps' if torch.backends.mps.is_available() else 'cpu'
