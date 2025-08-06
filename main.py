@@ -4,7 +4,7 @@ import streamlit as st
 # logging.set_verbosity_error()
 # warnings.filterwarnings("ignore", category=FutureWarning)
 
-st.title('SafeGuard: Multi-Modal Content Safety Classifier', width = 'content')
+st.title('ContentGuard: Multi-Modal Content Safety Classifier', width = 'content')
 
 prompt = st.chat_input(accept_file=True,
                     file_type=['jpg', 'jpeg'])
