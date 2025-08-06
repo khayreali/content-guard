@@ -15,27 +15,49 @@ class ChainOfThought:
     def chain_of_thought(self):
         model = load_pretrained(LlavaForConditionalGeneration,"llava-hf/llava-1.5-7b-hf").to(self.device)
         processor = load_pretrained(AutoProcessor, "llava-hf/llava-1.5-7b-hf")
-        if self.img:
+        if self.img and self.txt:
             self.img = Image.open(self.img)
             conversation = [
             {
                 "role": "user",
                 "content": [
                     {"type": "image", "image": self.img},
-                    {"type": "text", "text": self.txt},
                     {"type": "text", 
                     "text": f"""
-                    Analyze the image and text content step-by-step:
+                    Analyze the text content step-by-step:
 
-                    Step 1: State what the classifier results are. Image resuts are {self.img_results},  and text results are {self.txt_results}. If either value is none, state that.
+                    Step 1: State what the classifier results are for {self.img_results}. State what the text results are, {self.txt_results}, for the text {self.txt}, but don't say the text just the classifier results.
                     Step 2: State what the category results are {self.category}. If the value is none, state that there is no category.
-                    Step 3: The key concerns I identify with the image and the text are, if any at all...
-                    Step 4: Based on your thought process so far, are the classifications for the image, {self.img_results}, and text, {self.txt_results}, correct? If not, recommend a manual review by a member of staff.
-                    Step 5: Based on your thought process so far, if there is a category at all, is the categorization of the content from Step 2 correct?
+                    Step 3: The key concerns you identify with the the image and text are, if any at all...
+                    Step 4: Based on your thought process so far, are the classifications for the image and text, {self.img_results} and {self.txt_results}, correct? If so, state it's correct and why. If any or all are incorrect, state which ones are incorrect and skip to step 5 to explain.
+                    Step 5: Skip this step if the classifications were found correct in step 4. Skip by stating "Classifications are correct, no further review required." If any or all classifications are incorrect from step 4, state why they are incorrect.
+                    Step 6: Based on your thought process so far, is the categorization of the content, {self.category} from Step 2 correct? If so, state it's correct and why. If it's incorrect, state "Classification is incorrect" and skip to step 7 to explain.
+                    Step 7: Skip this step if the category was found correct in step 6. Skip by stating "Category is correct, no further review required." If category is incorrect from step 6, state why it is incorrect.
 
-                    Provide reasoning for every step. Please be succint and professional.
-                    
-                    Answer by stating Step 1: ANSWER, Step 2: ANSWER.
+                    Provide reasoning for every step. Please be succinct and professional.
+                    """},
+                    ],
+            },
+            ]
+        elif self.img:
+            conversation = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image", "image": self.img},
+                    {"type": "text", 
+                    "text": f"""
+                    Analyze the text content step-by-step:
+
+                    Step 1: State what the classifier results are {self.img_results}.
+                    Step 2: State what the category results are {self.category}. If the value is none, state that there is no category.
+                    Step 3: The key concerns you identify with the the image are, if any at all...
+                    Step 4: Based on your thought process so far, are the classifications for the image, {self.img_results}, correct? If so, state it's correct and why. If it's incorrect, state "Classification is incorrect" and skip to step 5 to explain.
+                    Step 5: Skip this step if the classification was found correct in step 4. Skip by stating "Classification is correct, no further review required." If classification is incorrect from step 4, state why it is incorrect.
+                    Step 6: Based on your thought process so far, is the categorization of the content, {self.category} from Step 2 correct? If so, state it's correct and why. If it's incorrect, state "Classification is incorrect" and skip to step 7 to explain.
+                    Step 7: Skip this step if the category was found correct in step 6. Skip by stating "Category is correct, no further review required." If category is incorrect from step 6, state why it is incorrect.
+
+                    Provide reasoning for every step. Please be succinct and professional.
                     """},
                     ],
             },
