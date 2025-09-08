@@ -2,14 +2,6 @@
 
 ContentGuard is a multi-modal content safety system that classifies both text and images for safety violations across multiple categories. Built using several machine learning models, it provides real-time content analysis with explainable reasoning through chain-of-thought processing. Users can leverage the chatbot to detect offensive content, NSFW material, hate speech, violence, and other harmful categories from both images and text. See below for a rundown of features:
 
-- **Multi-Modal Analysis**: Processes both text and image content.
-- **Real-Time Classification**: Instant safety assessments.
-- **Explainable AI**: Chain-of-thought reasoning provides transparent decision-making process
-- **Multiple Safety Categories**: Detects Violence, Sexually Explicit content, Identity Hate, Drugs, Weapons, and Self-Harm
-- **OCR Integration**: Extracts and analyzes text within images.
-- **Interactive Web Interface**: Built with Streamlit.
-- **Optimized Performance**: Model caching and device-aware acceleration (MPS/CPU)
-
 ### Models Used
 
 | Component | Model | Purpose |
