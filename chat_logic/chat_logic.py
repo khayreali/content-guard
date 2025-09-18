@@ -28,25 +28,25 @@ def text_chat(prompt):
     
 def image_chat(prompt):
     user = st.chat_message('user')
-    user.image(prompt['files'][0])
+    user.image(prompt['image'])
     assistant = st.chat_message('assistant')
 
     image_result = ImageClassifier
-    image_result = image_result.nsfw_classifier((prompt['files'][0]))
+    image_result = image_result.nsfw_classifier((prompt['image']))
     text_in_image = OpticalCharacterRecognition
-    text_in_image = text_in_image.optical_character_recognition(prompt['files'][0])
-    image_category = SafetyCategorizer(img=prompt['files'][0])
+    text_in_image = text_in_image.optical_character_recognition(prompt['image'])
+    image_category = SafetyCategorizer(img=prompt['image'])
     image_category = image_category.categorize_image_content()
     
     st.session_state.messages.append({'role': 'user', 
-                                      'content': prompt['files'][0]})
+                                      'content': prompt['image']})
     
 
     if not text_in_image:
         with assistant:
             st.markdown(f'###### {image_result}.')
             with st.spinner('Thinking...'):
-                cot_response = ChainOfThought(img=prompt['files'][0], img_results=image_result, category=image_category)
+                cot_response = ChainOfThought(img=prompt['image'], img_results=image_result, category=image_category)
                 cot_response = cot_response.chain_of_thought()
             with st.expander('*See reasoning*'):
                 st.markdown(cot_response)
@@ -59,7 +59,7 @@ def image_chat(prompt):
         with assistant:
             st.markdown(f'###### {text_result}. {image_result}')
             with st.spinner('Thinking...'):
-                cot_response = ChainOfThought(img=prompt['files'][0], txt=text_in_image, img_results=image_result, txt_results=text_result, category=image_category)
+                cot_response = ChainOfThought(img=prompt['image'], txt=text_in_image, img_results=image_result, txt_results=text_result, category=image_category)
                 cot_response = cot_response.chain_of_thought()
             with st.expander('*See reasoning*'):
                 st.markdown(cot_response)
