@@ -20,7 +20,7 @@ class SafetyCategorizer:
     def categorize_image_content(self):
         model = load_pretrained(CLIPModel, "openai/clip-vit-base-patch32")
         processor = load_pretrained(CLIPProcessor, "openai/clip-vit-base-patch32")
-        image = Image.open(self.img)
+        image = self.img
         inputs = processor(text = self.categories, images=image, return_tensors='pt', padding=True).to(self.device)
 
         outputs = model(**inputs)

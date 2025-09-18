@@ -6,7 +6,6 @@ class ImageClassifier:
         pass
 
     def nsfw_classifier(img):
-        img = Image.open(img)
         classifier = load_pipeline("image-classification", "Falconsai/nsfw_image_detection")
         result = classifier(img)[0]['label']
 
