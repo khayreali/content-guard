@@ -16,7 +16,6 @@ class ChainOfThought:
         model = load_pretrained(LlavaForConditionalGeneration,"llava-hf/llava-1.5-7b-hf").to(self.device)
         processor = load_pretrained(AutoProcessor, "llava-hf/llava-1.5-7b-hf")
         if self.img and self.txt:
-            self.img = Image.open(self.img)
             conversation = [
             {
                 "role": "user",

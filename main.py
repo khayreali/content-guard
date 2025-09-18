@@ -1,10 +1,16 @@
 from chat_logic import text_chat, image_chat
 import streamlit as st
+from dotenv import load_dotenv
+import os
+from PIL import Image
+from huggingface_hub import login
 
-# logging.set_verbosity_error()
-# warnings.filterwarnings("ignore", category=FutureWarning)
+load_dotenv()
 
-st.title('ContentGuard: Multi-Modal Content Safety Classifier', width = 'content')
+if os.getenv("HUGGING_FACE_TOKEN"):
+     login(token=os.getenv("HUGGING_FACE_TOKEN"))
+
+st.title('ContentGuard', width = 'content')
 
 prompt = st.chat_input(accept_file=True,
                     file_type=['jpg', 'jpeg'])
@@ -24,4 +30,5 @@ if prompt and prompt.text and not prompt['files']:
     
 
 if prompt and prompt['files']:
-    image_chat(prompt)
+    modified_prompt = {'image': Image.open(prompt['files'][0]), 'text': prompt.text}
+    image_chat(modified_prompt)
