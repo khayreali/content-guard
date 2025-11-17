@@ -1,1 +1,1 @@
-from .chat_logic import text_chat, image_chat
+from .chat_logic import text_chat, image_chat, load_models

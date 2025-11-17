@@ -1,7 +1,5 @@
 from PIL import Image
-from utils import load_pretrained, load_pipeline
-from transformers import CLIPModel, CLIPProcessor
-import torch
+from utils import get_device, get_clip_model, get_zero_shot_classifier
 
 class SafetyCategorizer:
     def __init__(self, img = None, txt = None):
@@ -15,11 +13,10 @@ class SafetyCategorizer:
         "Weapons",
         "Self-Harm"
     ]
-        self.device = 'mps' if torch.backends.mps.is_available() else 'cpu'
+        self.device = get_device()
         
     def categorize_image_content(self):
-        model = load_pretrained(CLIPModel, "openai/clip-vit-base-patch32")
-        processor = load_pretrained(CLIPProcessor, "openai/clip-vit-base-patch32")
+        model, processor = get_clip_model()
         image = self.img
         inputs = processor(text = self.categories, images=image, return_tensors='pt', padding=True).to(self.device)
 
@@ -34,7 +31,7 @@ class SafetyCategorizer:
         return max(results, key=results.get)
 
     def categorize_text_content(self):
-        classifier = load_pipeline("zero-shot-classification", "facebook/bart-large-mnli")
+        classifier = get_zero_shot_classifier()
         results = classifier(self.txt, self.categories)
         results = {category: float(scores) for category, scores in zip(results['labels'], results['scores'])}
         return max(results, key=results.get)
