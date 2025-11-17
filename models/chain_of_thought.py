@@ -1,4 +1,6 @@
 from utils import get_device, get_llava_model
+from threading import Thread
+from transformers import TextIteratorStreamer
 
 class ChainOfThought:
     def __init__(self, img=None,txt=None,img_results=None, txt_results=None, category=None):
@@ -9,7 +11,7 @@ class ChainOfThought:
         self.txt_results = txt_results
         self.category = category
 
-    def chain_of_thought(self):
+    def stream_chain_of_thought(self):
         model, processor = get_llava_model()
         if self.img and self.txt:
             conversation = [
@@ -89,15 +91,16 @@ class ChainOfThought:
             return_tensors="pt"
         ).to(self.device)
 
-        # Generate
-        generate_ids = model.generate(**inputs, max_new_tokens=200)
-        lst_result = processor.batch_decode(generate_ids, skip_special_tokens=True)
-        response_txt = lst_result[0]
-        if not response_txt:
-            return
-        else:
-            response_txt = response_txt.split('ASSISTANT: ')
-            response_txt = response_txt[1]
-            parts = response_txt.split("Step ")
-            response_txt = "Steps " + "\nStep ".join(parts[1:])
-            return response_txt
+        streamer = TextIteratorStreamer(processor, skip_prompt=True, skip_special_tokens=True)
+
+        generation_kwargs = {
+            "streamer": streamer,
+            "max_new_tokens": 200 
+        }
+        generation_kwargs.update(inputs)
+
+        thread = Thread(target=model.generate, kwargs=generation_kwargs)
+        thread.start()
+
+        for new_text in streamer:
+            yield new_text
